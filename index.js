@@ -1,6 +1,7 @@
 require('dotenv').config()
 const Bot = require('slackbots')
 const axios = require('axios')
+const isUrl = require('is-url')
 
 const settings = {
   token: process.env.SLACK_TOKEN,
@@ -42,16 +43,17 @@ class asciify extends Bot {
   }
 
   async getASCII(message) {
-    try {
-      const { data: ascii } = await axios.post('https://r9l2cw9nk7.execute-api.us-east-2.amazonaws.com/Production', {
-        url: message,
-        width: 40,
-        height: 40
-      })
-      return `\`\`\`${ascii}\`\`\``
-    } catch (e) {
-      return 'Pa que quieres eso, jaja, saludos'
+    if (isUrl(message)) {
+      try {
+        const { data: ascii } = await axios.post('https://r9l2cw9nk7.execute-api.us-east-2.amazonaws.com/Production', {
+          url: message,
+          width: 40,
+          height: 40
+        })
+        return `\`\`\`${ascii}\`\`\``
+      } catch (e) {}
     }
+    return 'Pa que quieres eso, jaja, saludos'
   }
 }
 

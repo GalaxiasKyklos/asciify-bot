@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "is-url": "^1.2.4",
     "slackbots": "0.3.0"
   },
   "devDependencies": {
