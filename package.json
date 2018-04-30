@@ -1,0 +1,20 @@
+{
+  "name": "asciify-bot",
+  "version": "1.0.0",
+  "description": "The easiest way to asciify images from Slack",
+  "main": "index.js",
+  "repository": "git@github.com:GalaxiasKyklos/asciify-bot.git",
+  "author": "Saúl Ponce <saul_enrique-7285-96@hotmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "slackbots": "0.3.0"
+  },
+  "devDependencies": {
+    "dotenv": "^5.0.1"
+  },
+  "scripts": {
+    "start": "node .",
+    "start-dev": "nodemon ."
+  }
+}
