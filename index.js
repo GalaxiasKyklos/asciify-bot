@@ -21,9 +21,15 @@ class asciify extends Bot {
   }
 
   onMessage(message) {
+    let channel = this.getChannels()._value.channels.find(channel => channel.id === message.channel)
     console.log('::', message)
     if (message.type === 'message' && message.bot_id !== 'BAF6F2EQ0') {
-      this.postMessageToChannel('asciify-dev', message.text, { as_user:true })
+      if(channel){
+        this.postMessageToChannel(channel.name, message.text, { as_user:true })
+      } else {
+        const user = this.getUsers()._value.members.find(user => user.id === message.user)
+        this.postMessageToUser(user.name, message.text, { as_user:true })
+      }
     }
     return message
   }
