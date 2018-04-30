@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "slackbots": "0.3.0"
   },
   "devDependencies": {
