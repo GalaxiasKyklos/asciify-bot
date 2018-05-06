@@ -15,6 +15,7 @@ class asciify extends Bot {
     this.run = this.run.bind(this)
     this.onMessage = this.onMessage.bind(this)
     this.getASCII = this.getASCII.bind(this)
+    this.sendHelpMessage = this.sendHelpMessage.bind(this)
   }
 
   async run() {
@@ -59,11 +60,15 @@ class asciify extends Bot {
       }
       const response = await this.getASCII(asciiRequest)
       if (channel && message.text.startsWith(`<@${this.ownUser.id}>`)) {
-        this.postMessageToChannel(channel.name, response, {
+        if (['help', 'ayuda'].some(s => s === curatedMsg)) {
+          await this.sendHelpMessage(channel, user)
+          return
+        }
+        await this.postMessageToChannel(channel.name, response, {
           as_user: true
         })
       } else if (!channel) {
-        this.postMessageToUser(user.name, response, {
+        await this.postMessageToUser(user.name, response, {
           as_user: true
         })
       }
@@ -82,6 +87,28 @@ class asciify extends Bot {
       }
     }
     return 'Pa que quieres eso, jaja, saludos'
+  }
+
+  async sendHelpMessage(channel, user) {
+    const message = `Usage:
+    \`@asciify <url to image> | <me> | <help>\`
+    examples:
+      \`@asciify me\`
+      \`@asciify https://images-na.ssl-images-amazon.com/images/I/51zLZbEVSTL._SY355_.jpg\`
+    `
+    try {
+      if (channel) {
+        await this.postMessageToChannel(channel.name, message, {
+          as_user: true
+        })
+      } else if (user) {
+        await this.postMessageToUser(user.name, message, {
+          as_user: true
+        })
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 }
 
