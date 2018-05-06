@@ -12,25 +12,33 @@ class asciify extends Bot {
   constructor(settings) {
     super(settings)
     this.settings = settings
-
     this.run = this.run.bind(this)
     this.onMessage = this.onMessage.bind(this)
     this.getASCII = this.getASCII.bind(this)
   }
 
-  run() {
+  async run() {
+    try {
+      const channels = await this.getChannels()
+      const users = await this.getUsers()
+      this.channels = channels.channels
+      this.users = users.members
+      this.ownUser = await this.getUser(this.name)
+    } catch (e) {
+      console.error(e)
+    }
     this.on('message', this.onMessage)
   }
 
   async onMessage(message) {
-    const channel = this.getChannels()._value.channels.find(channel => channel.id === message.channel)
-    const user = this.getUsers()._value.members.find(user => user.id === message.user)
+    const channel = this.channels.find(channel => channel.id === message.channel)
+    const user = this.users.find(user => user.id === message.user)
     const asciiRequest = {
       width: 40,
       height: 40,
     }
-    if (message.type === 'message' && message.bot_id !== 'BAF6F2EQ0') {
-      const curatedMsg = message.text.replace('<@UAFAWQ5GR> ', '')
+    if (message.type === 'message' && message.bot_id !== this.ownUser.profile.bot_id) {
+      const curatedMsg = message.text.replace(`<@${this.ownUser.id}> `, '')
       asciiRequest.url = curatedMsg === 'me' ? user.profile.image_original : curatedMsg.slice(1, -1)
       if (message.subtype === 'file_share') {
         try {
@@ -50,7 +58,7 @@ class asciify extends Bot {
         }
       }
       const response = await this.getASCII(asciiRequest)
-      if (channel && message.text.startsWith('<@UAFAWQ5GR>')) {
+      if (channel && message.text.startsWith(`<@${this.ownUser.id}>`)) {
         this.postMessageToChannel(channel.name, response, {
           as_user: true
         })
@@ -60,7 +68,6 @@ class asciify extends Bot {
         })
       }
     }
-    return message
   }
 
   async getASCII(request) {
@@ -68,7 +75,7 @@ class asciify extends Bot {
       try {
         const {
           data: ascii
-        } = await axios.post('https://r9l2cw9nk7.execute-api.us-east-2.amazonaws.com/Production', request)
+        } = await axios.post(process.env.API_URL, request)
         return `\`\`\`${ascii}\`\`\``
       } catch (e) {
         console.error(e)
@@ -78,4 +85,9 @@ class asciify extends Bot {
   }
 }
 
-new asciify(settings).run()
+const startBot = async (settings) => {
+  const bot = new asciify(settings)
+  await bot.run()
+}
+
+startBot(settings)
