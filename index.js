@@ -22,9 +22,12 @@ class asciify extends Bot {
     try {
       const channels = await this.getChannels()
       const users = await this.getUsers()
+      const emojis = await this._api('emoji.list')
       this.channels = channels.channels
       this.users = users.members
       this.ownUser = await this.getUser(this.name)
+      this.emojis = emojis.emoji
+      console.log(this.emojis)
     } catch (e) {
       console.error(e)
     }
@@ -58,6 +61,15 @@ class asciify extends Bot {
           console.error(e)
         }
       }
+
+      if (this.emojis[curatedMsg.slice(1, -1)]) {
+        let current = this.emojis[curatedMsg.slice(1, -1)]
+        while(this.emojis[current.split('alias:')[1]] !== undefined) {
+          current = this.emojis[current.split('alias:')[1]]
+        }
+        asciiRequest.url = current
+      }
+
       const response = await this.getASCII(asciiRequest)
       if (channel && message.text.startsWith(`<@${this.ownUser.id}>`)) {
         if (['help', 'ayuda'].some(s => s === curatedMsg)) {
