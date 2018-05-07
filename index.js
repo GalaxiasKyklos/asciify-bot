@@ -36,7 +36,6 @@ class asciify extends Bot {
   async onMessage(message) {
     const channel = this.channels.find(channel => channel.id === message.channel)
     const user = this.users.find(user => user.id === message.user)
-    console.log(user)
     const asciiRequest = {
       width: 40,
       height: 40,
