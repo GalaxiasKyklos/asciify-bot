@@ -130,6 +130,8 @@ class asciify extends Bot {
       \`@asciify me\`
       \`@asciify :fine-is-this:\`
       \`@asciify @asciify\`
+
+    the web version is accessible through here: http://asciify.galaxiaskyklos.com
     `
     try {
       if (channel) {
