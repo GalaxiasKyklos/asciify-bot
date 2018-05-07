@@ -47,7 +47,9 @@ class asciify extends Bot {
       if (curatedMsg.startsWith('<@')) {
         const referredUserID = curatedMsg.replace('<@', '').replace('>', '')
         const referredUser = this.users.find(user => user.id === referredUserID)
-        asciiRequest.url = referredUser.profile.image_72
+        if (referredUser) {
+          asciiRequest.url = referredUser.profile.image_72
+        }
       } else {
         asciiRequest.url = curatedMsg === 'me' ? user.profile.image_72 : curatedMsg.slice(1, -1)
       }
@@ -107,6 +109,7 @@ class asciify extends Bot {
   }
 
   async getASCII(request) {
+    console.log(request)
     if ((request.url && isUrl(request.url)) || request.image) {
       try {
         const {
