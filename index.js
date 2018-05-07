@@ -36,6 +36,7 @@ class asciify extends Bot {
   async onMessage(message) {
     const channel = this.channels.find(channel => channel.id === message.channel)
     const user = this.users.find(user => user.id === message.user)
+    console.log(user)
     const asciiRequest = {
       width: 40,
       height: 40,
@@ -81,7 +82,7 @@ class asciify extends Bot {
       }
 
       try {
-        const response = await this.getASCII(asciiRequest)
+        const response = await this.getASCII(asciiRequest, user)
 
         if (channel && message.text.startsWith(`<@${this.ownUser.id}>`)) {
           if (['help', 'ayuda'].some(s => s === curatedMsg)) {
@@ -106,7 +107,7 @@ class asciify extends Bot {
     }
   }
 
-  async getASCII(request) {
+  async getASCII(request, user) {
     if ((request.url && isUrl(request.url)) || request.image) {
       try {
         const {
@@ -117,7 +118,7 @@ class asciify extends Bot {
         console.error(e)
       }
     }
-    return 'Pa que quieres eso, jaja, saludos'
+    return Math.random() > 0.5? 'Pa que quieres eso, jaja, saludos': `I\'m sorry, <@${user.id}>. I\'m afraid I can\'t do that.`
   }
 
   async sendHelpMessage(channel, user) {
