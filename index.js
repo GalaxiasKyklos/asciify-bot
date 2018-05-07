@@ -27,7 +27,6 @@ class asciify extends Bot {
       this.users = users.members
       this.ownUser = await this.getUser(this.name)
       this.emojis = emojis.emoji
-      console.log(this.emojis)
     } catch (e) {
       console.error(e)
     }
@@ -41,9 +40,18 @@ class asciify extends Bot {
       width: 40,
       height: 40,
     }
+
     if (message.type === 'message' && message.bot_id !== this.ownUser.profile.bot_id) {
       const curatedMsg = message.text.replace(`<@${this.ownUser.id}> `, '')
-      asciiRequest.url = curatedMsg === 'me' ? user.profile.image_original : curatedMsg.slice(1, -1)
+
+      if (curatedMsg.startsWith('<@')) {
+        const referredUserID = curatedMsg.replace('<@', '').replace('>', '')
+        const referredUser = this.users.find(user => user.id === referredUserID)
+        asciiRequest.url = referredUser.profile.image_72
+      } else {
+        asciiRequest.url = curatedMsg === 'me' ? user.profile.image_72 : curatedMsg.slice(1, -1)
+      }
+
       if (message.subtype === 'file_share') {
         try {
           const {
@@ -64,25 +72,36 @@ class asciify extends Bot {
 
       if (this.emojis[curatedMsg.slice(1, -1)]) {
         let current = this.emojis[curatedMsg.slice(1, -1)]
-        while(this.emojis[current.split('alias:')[1]] !== undefined) {
+
+        while (this.emojis[current.split('alias:')[1]] !== undefined) {
           current = this.emojis[current.split('alias:')[1]]
         }
+
         asciiRequest.url = current
       }
 
-      const response = await this.getASCII(asciiRequest)
-      if (channel && message.text.startsWith(`<@${this.ownUser.id}>`)) {
-        if (['help', 'ayuda'].some(s => s === curatedMsg)) {
-          await this.sendHelpMessage(channel, user)
-          return
+      try {
+        const response = await this.getASCII(asciiRequest)
+
+        if (channel && message.text.startsWith(`<@${this.ownUser.id}>`)) {
+          if (['help', 'ayuda'].some(s => s === curatedMsg)) {
+            await this.sendHelpMessage(channel, user)
+            return
+          }
+          await this.postMessageToChannel(channel.name, response, {
+            as_user: true
+          })
+        } else if (!channel) {
+          if (['help', 'ayuda'].some(s => s === curatedMsg)) {
+            await this.sendHelpMessage(channel, user)
+            return
+          }
+          await this.postMessageToUser(user.name, response, {
+            as_user: true
+          })
         }
-        await this.postMessageToChannel(channel.name, response, {
-          as_user: true
-        })
-      } else if (!channel) {
-        await this.postMessageToUser(user.name, response, {
-          as_user: true
-        })
+      } catch (e) {
+        console.error(e)
       }
     }
   }
