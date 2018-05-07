@@ -119,7 +119,7 @@ class asciify extends Bot {
         console.error(e)
       }
     }
-    return Math.random() > 0.5? 'Pa que quieres eso, jaja, saludos': `I\'m sorry, <@${user.id}>. I\'m afraid I can\'t do that.`
+    return Math.random() > 0.5 ? 'Pa que quieres eso, jaja, saludos' : `I\'m sorry, <@${user.id}>. I\'m afraid I can\'t do that.`
   }
 
   async sendHelpMessage(channel, user) {
