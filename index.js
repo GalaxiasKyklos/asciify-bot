@@ -124,10 +124,12 @@ class asciify extends Bot {
 
   async sendHelpMessage(channel, user) {
     const message = `Usage:
-    \`@asciify <url to image> | <me> | <help>\`
+    \`@asciify <url to image> | <me> | <:emoji:> | <<@user>> | <help>\`
     examples:
-      \`@asciify me\`
       \`@asciify https://images-na.ssl-images-amazon.com/images/I/51zLZbEVSTL._SY355_.jpg\`
+      \`@asciify me\`
+      \`@asciify :fine-is-this:\`
+      \`@asciify @asciify\`
     `
     try {
       if (channel) {
